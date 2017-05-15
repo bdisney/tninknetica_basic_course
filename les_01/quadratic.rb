@@ -24,8 +24,9 @@ loop do
     math_root = -b * 0.5 / a
     puts "Корни равны (x1 и x2): #{math_root}"
   else
-    math_root_1 = (-b + Math.sqrt(discriminant)) * 0.5 / a
-    math_root_2 = (-b - Math.sqrt(discriminant)) * 0.5 / a
+    math_sqrt = Math.sqrt(discriminant)
+    math_root_1 = (-b + math_sqrt) * 0.5 / a
+    math_root_2 = (-b - math_sqrt) * 0.5 / a
     puts 'Уравнение имеет два корня:'
     puts "\tx1 = #{math_root_1}\t x2 = #{math_root_2}"
   end 
