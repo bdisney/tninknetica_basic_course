@@ -50,12 +50,6 @@ loop do
       puts "В указанном месяце не может быть #{day} (день/дней), в нем может быть тоько #{month_days_qty} (день/дней)." 
       break
     else
-      if leap_year?(year) && month == 2
-        error_message if day >= 30
-      else
-        date_duration = months_duration.take(month - 1).reduce(:+) + day 
-      end
-
       date_duration = months_duration.take(month - 1).reduce(:+) + day 
 
       if leap_year?(year) && month > 2
