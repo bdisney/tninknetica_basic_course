@@ -15,8 +15,6 @@ calendar ={
 
 puts 'Месяцы продолжительностью 30 дней: '
 
-i = 1
-calendar.each do |key, value|
-  puts "\t #{i}. #{key}" if value == 30  
-  i += 1
+calendar.each_with_index do |(key, value), index|
+  puts "\t #{index+1}. #{key}" if value == 30  
 end
