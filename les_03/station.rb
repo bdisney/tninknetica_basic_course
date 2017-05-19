@@ -12,6 +12,15 @@ class Station
     puts "Поезд следующий по маршруту #{train.route.stations.first} - #{train.route.stations.last} прибыл на станцию #{self.title}"
   end
 
+  def send_train(train)
+    if self.trains.include?(train) 
+      self.trains.delete(train) 
+      puts "Поезд отправился со станции #{self.title}"
+    else
+      puts "Такого поезда на станции #{self.title} нет."
+    end
+  end
+
   def trains_at_the_station
     puts 'Список поездов на станции: '
 
