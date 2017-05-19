@@ -23,4 +23,13 @@ class Station
     end
   end
 
+  def display_trains_by_type
+    trains_by_type = Hash.new(0)
+
+    self.trains.each { |train| trains_by_type[train.type] += 1 }
+    puts "Поезда на станции #{self.title} по типу: "
+
+    trains_by_type.each { |type, qty| puts "\t#{type}: #{qty} ед." }
+    puts "Всего поездов: #{trains_by_type.values.reduce(:+)} ед."
+  end
 end

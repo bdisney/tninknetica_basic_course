@@ -1,5 +1,5 @@
 class Train
-  TYPE = {passenger: 'Пассажирские', cargo: 'Грузовые'}
+  TYPE = {passenger: 'Passenger', cargo: 'Cargo'}
 
   attr_accessor :speed, :carriages_qty, :route
   attr_reader :type, :route, :current_station, :number
