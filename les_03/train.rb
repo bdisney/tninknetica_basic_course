@@ -44,32 +44,36 @@ class Train
 
   #Присваивание маршрута
   def set_route(route)
+    self.current_station.send_train(self) if self.current_station
     @route = route
-    puts "Назначен маршрут: #{route.stations.first} - #{route.stations.last}"
+    puts "Назначен маршрут: #{route.stations.first.title} - #{route.stations.last.title}"
 
     self.current_station = route.stations.first
-    puts "Текущая станция: #{current_station}"
+    puts "Текущая станция: #{current_station.title}"
   end
 
   #Перемещение по маршруту
   def move(direction)
     if self.route 
       if direction == :forward && self.next_station
+        self.current_station.send_train(self)
+
         self.increase_speed(20)
         puts "Вжжжжж..."
 
         self.current_station = self.next_station
         self.stop
 
-        puts "Поезд прибыл на станцию: #{current_station}"
+       # puts "Поезд #{self.number} прибыл на станцию: #{current_station.title}"
       elsif direction == :back && self.prev_station
+        self.current_station.send_train(self)
         self.increase_speed(20)
         puts "Вжжжжж..."
 
         self.current_station = self.prev_station
         self.stop
 
-        puts "Поезд прибыл на станцию: #{current_station}"
+       # puts "Поезд #{self.number} прибыл на станцию: #{current_station.title}"
       else
         puts "...движение невозможно"
       end
@@ -79,8 +83,9 @@ class Train
   end
 
 
-  #Вспомогательные методы пока не прятал их в private
+  #Вспомогательные методы 
   def current_station=(station)
+    station.take_the_train(self)
     @current_station = station
   end
 
