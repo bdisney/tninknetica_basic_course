@@ -9,7 +9,7 @@ class Station
 
   def take_the_train(train)
     self.trains << train
-    puts "Поезд следующий по маршруту #{train.route.stations.first} - #{train.route.stations.last} прибыл на станцию #{self.title}"
+    puts "Поезд следующий по маршруту #{train.route.stations.first.title} - #{train.route.stations.last.title} прибыл на станцию #{self.title}"
   end
 
   def send_train(train)
@@ -28,7 +28,7 @@ class Station
       puts "\n#{index}. \tПоезд №: #{train.number}"
       puts "\tТип: #{train.type}"
       puts "\tКол-во вагонов: #{train.carriages_qty}"
-      puts "\tМаршрут следования: #{train.route.stations.first} - #{train.route.stations.last}"
+      puts "\tМаршрут следования: #{train.route.stations.first.title} - #{train.route.stations.last.title}"
     end
   end
 
@@ -38,7 +38,7 @@ class Station
     self.trains.each { |train| trains_by_type[train.type] += 1 }
     puts "Поезда на станции #{self.title} по типу: "
 
-    trains_by_type.each { |type, qty| puts "\t#{type}: #{qty} ед." }
+    trains_by_type.each { |type, qty| puts "\t#{Train::TYPE[type]}: #{qty} ед." }
     puts "Всего поездов: #{trains_by_type.values.reduce(:+)} ед."
   end
 end
