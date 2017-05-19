@@ -14,7 +14,7 @@ class Route
     puts "Станция «#{station}» добавлена в маршрут #{self}."
   end
 
-  def destroy_station(station)
+  def remove_station(station)
     if self.stations.include?(station) 
       self.stations.delete(station) 
       puts "Станция #{station} успешно удалена из машртуа #{self.stations.first} - #{self.stations.last}."
