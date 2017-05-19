@@ -2,7 +2,7 @@ class Train
   TYPE = {passenger: 'Пассажирские', cargo: 'Грузовые'}
 
   attr_accessor :speed, :carriages_qty, :route
-  attr_reader :type
+  attr_reader :type, :route, :current_station
 
   def initialize(number, type, carriages_qty)
     @number = number
@@ -33,8 +33,11 @@ class Train
   end
 
   def set_route(route)
-    self.route = route
-    #current_station = route.stations.first
+    @route = route
+    puts "Назначен маршрут: #{route.stations.first} - #{route.stations.last}"
+
+    self.current_station = route.stations.first
+    puts "Текущая станция: #{current_station}"
   end
 
   def increase_speed(value)
@@ -49,11 +52,15 @@ class Train
     self.carriages_qty
   end
 
+  # def next_station
+  #   self.route.next(self.current_station)
+  # end
+
   def about
     puts "Тип: #{TYPE[self.type]}, вагонов: #{self.carriages_qty}, скорость: #{self.speed}"
   end
 
-  # def current_station
-  #   self.current_station
-  # end
+  def current_station=(station)
+    @current_station = station
+  end
 end
