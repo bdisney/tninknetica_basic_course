@@ -6,20 +6,20 @@ class Route
   end
 
   def stations_list
-    self.stations.each.with_index(1) { |station, index| puts "#{index}. #{station}" }
+    self.stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
   end
 
   def add_station(station)
     self.stations.insert(-2, station)
-    puts "Станция «#{station}» добавлена в маршрут #{self}."
+    puts "Станция «#{station.title}» добавлена в маршрут #{self}."
   end
 
   def remove_station(station)
     if self.stations.include?(station) 
       self.stations.delete(station) 
-      puts "Станция #{station} успешно удалена из машртуа #{self.stations.first} - #{self.stations.last}."
+      puts "Станция #{station} успешно удалена из машртуа #{self.stations.first.title} - #{self.stations.last.title}."
     else
-      puts "Станции с названием #{station} не содержится в маршруте."
+      puts "Станции с названием #{station.title} не содержится в маршруте."
     end
   end
 end
