@@ -11,9 +11,9 @@ class Train
     @speed = 0
   end
  
-  #Блок по управлению движением
+  #Блок по управлению скоростью
   def increase_speed(value)
-    self.speed = value
+    value.positive? ? self.speed = value : (puts 'Некорректное значение для увеличения скорости.')
   end
 
   def current_speed
@@ -26,19 +26,15 @@ class Train
 
   #Добавление/отцепка вагонов
   def add_carriage
-    if speed == 0 
-      self.carriages_qty += 1 
-    else
-      puts 'Прежде чем добавить вагон остановите поезд.'
-    end
+    speed.zero? ? self.carriages_qty += 1 : ( puts 'Прежде чем добавить вагон остановите поезд.' )
   end
 
   def unhook_carriage
-    if speed == 0 && carriages_qty > 0
+    if speed.zero? && carriages_qty.positive?
       self.carriages_qty -= 1 
     else
-      puts 'Прежде чем отцепить вагон остановите поезд.' if speed > 0
-      puts "Нечего отцеплять. Кол-во вагонов: #{carriages_qty}" if carriages_qty == 0
+      puts 'Прежде чем отцепить вагон остановите поезд.' if speed.positive?
+      puts "Нечего отцеплять. Кол-во вагонов: #{carriages_qty}" if carriages_qty.zero?
     end
   end
 
@@ -53,38 +49,18 @@ class Train
   end
 
   #Перемещение по маршруту
-  def move(direction)
-    if self.route 
-      if direction == :forward && self.next_station
-        self.current_station.send_train(self)
-
-        self.increase_speed(20)
-        puts "Вжжжжж..."
-
-        self.current_station = self.next_station
-        self.stop
-
-       # puts "Поезд #{self.number} прибыл на станцию: #{current_station.title}"
-      elsif direction == :back && self.prev_station
-        self.current_station.send_train(self)
-        self.increase_speed(20)
-        puts "Вжжжжж..."
-
-        self.current_station = self.prev_station
-        self.stop
-
-       # puts "Поезд #{self.number} прибыл на станцию: #{current_station.title}"
-      else
-        puts "...движение невозможно"
-      end
-    else
-      puts "Прежде чем начать движение необходимо назначить маршрут."
+  def move(direction = :forward || :back)
+    if self.route
+      sequent_station = (direction == :back ? prev_station : next_station)
+      sequent_station ? move_to(sequent_station) : (puts 'Движение в выбранном направлении невозможно.')
+    else 
+      puts 'Прежде чем начать движение необходимо назначить маршрут.'
     end
   end
 
-
   #Вспомогательные методы 
   def current_station=(station)
+    self.stop
     station.take_the_train(self)
     @current_station = station
   end
@@ -92,24 +68,23 @@ class Train
   def next_station
     position = self.route.stations.index(self.current_station)
 
-    if self.current_station == self.route.stations.last
-      puts 'Конечная'
-    else
-      self.route.stations[position + 1] 
-    end
+    self.current_station == self.route.stations.last ? ( puts 'Конечная' ) : self.route.stations[position + 1] 
   end
 
   def prev_station
     position = self.route.stations.index(self.current_station)
   
-    if self.current_station == self.route.stations.first
-      puts 'Конечная'
-    else
-      self.route.stations[position - 1] 
-    end
+    self.current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
   end
 
   def about
     puts "Тип: #{TYPE[self.type]}, вагонов: #{self.carriages_qty}, скорость: #{self.speed}"
+  end
+
+  private
+
+  def move_to(sequent_station)
+    self.current_station.send_train(self)
+    self.current_station = sequent_station
   end
 end
