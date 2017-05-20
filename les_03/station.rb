@@ -8,6 +8,7 @@ class Station
   end
 
   def take_the_train(train)
+    train.stop
     self.trains << train
     puts "Поезд следующий по маршруту #{train.route.stations.first.title} - #{train.route.stations.last.title} прибыл на станцию #{self.title}"
   end
@@ -15,6 +16,8 @@ class Station
   def send_train(train)
     if self.trains.include?(train) 
       self.trains.delete(train) 
+
+      train.increase_speed(20)
       puts "Поезд отправился со станции #{self.title}"
     else
       puts "Такого поезда на станции #{self.title} нет."
@@ -32,13 +35,10 @@ class Station
     end
   end
 
-  def display_trains_by_type
-    trains_by_type = Hash.new(0)
+  def trains_by_type(type)
+    trains_by_type = []
 
-    self.trains.each { |train| trains_by_type[train.type] += 1 }
-    puts "Поезда на станции #{self.title} по типу: "
-
-    trains_by_type.each { |type, qty| puts "\t#{Train::TYPE[type]}: #{qty} ед." }
-    puts "Всего поездов: #{trains_by_type.values.reduce(:+)} ед."
+    self.trains.each { |train| trains_by_type.push(train) if train.type == type }
+    puts "\t#{Train::TYPE[type]}: #{trains_by_type.count} ед." 
   end
 end
