@@ -7,7 +7,6 @@ class Station
   end
 
   def take_the_train(train)
-    train.stop
     self.trains << train
     puts "Поезд следующий по маршруту #{train.route.stations.first.title} - #{train.route.stations.last.title} прибыл на станцию #{self.title}"
   end
@@ -16,7 +15,6 @@ class Station
     if self.trains.include?(train) 
       self.trains.delete(train) 
 
-      train.increase_speed(20)
       puts "Поезд отправился со станции #{self.title}"
     else
       puts "Такого поезда на станции #{self.title} нет."
