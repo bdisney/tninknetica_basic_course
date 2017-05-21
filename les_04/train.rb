@@ -1,5 +1,5 @@
 class Train
-  TYPE = {passenger: 'Passenger', cargo: 'Cargo'}
+  TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0
 
   attr_reader :type, :route, :current_station, :number, :speed, :carriages
@@ -89,7 +89,7 @@ class Train
     @current_station = station
   end
 
-  #Скрытие деталей реализации. вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
+  #Скрытие деталей реализации. Вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
   def add_carriage!
     carriage = CargoCarriage.new if self.type.eql?(:cargo)
     carriage = PassengerCarriage.new if self.type.eql?(:passenger)
@@ -97,7 +97,7 @@ class Train
     self.carriages.push(carriage)
   end
 
-  #Скрытие деталей реализации. вызов осуществляется только из метода unhook_carriage после прохождения необходимых проверок
+  #Скрытие деталей реализации. Вызов осуществляется только из метода unhook_carriage после прохождения необходимых проверок
   def unhook_carriage!
     self.carriages.count.positive? ? self.carriages.pop : ( puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" )
   end
