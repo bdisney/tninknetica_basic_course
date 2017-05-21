@@ -1,5 +1,6 @@
 class Train
   TYPE = {passenger: 'Passenger', cargo: 'Cargo'}
+  INITIAL_SPEED = 0
 
   attr_accessor :speed, :carriages_qty, :route
   attr_reader :type, :route, :current_station, :number
@@ -8,7 +9,7 @@ class Train
     @number = number
     @type = type
     @carriages_qty = carriages_qty
-    @speed = 0
+    @speed = INITIAL_SPEED
   end
  
   #Блок по управлению скоростью

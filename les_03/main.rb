@@ -9,7 +9,7 @@ end
 
 controller = Controller.new
 
-puts 'Добро пожаловать в он-лайн депо'
+puts 'Добро пожаловать в он-лайн депо!'
 
 loop do
   controller.main_actions

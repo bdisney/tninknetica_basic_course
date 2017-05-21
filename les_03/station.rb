@@ -1,5 +1,4 @@
 class Station
-
   attr_reader :title, :trains
 
   def initialize(title)
@@ -38,5 +37,4 @@ class Station
   def trains_by_type(type)
     self.trains.select.count { |train| train.type if train.type == type}
   end
-
 end
