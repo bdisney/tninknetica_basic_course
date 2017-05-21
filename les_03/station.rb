@@ -36,9 +36,7 @@ class Station
   end
 
   def trains_by_type(type)
-    trains_by_type = []
-
-    self.trains.each { |train| trains_by_type.push(train) if train.type == type }
-    puts "\t#{Train::TYPE[type]}: #{trains_by_type.count} ед." 
+    self.trains.select.count { |train| train.type if train.type == type}
   end
+
 end
