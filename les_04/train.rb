@@ -2,26 +2,21 @@ class Train
   TYPE = {passenger: 'Passenger', cargo: 'Cargo'}
   INITIAL_SPEED = 0
 
-  attr_reader :type, :route, :current_station, :number, :speed, :carriages_qty
+  attr_reader :type, :route, :current_station, :number, :speed, :carriages
 
   def initialize(number)
     @number = number
-    @carriages_qty = 0
+    @carriages = []
     @speed = INITIAL_SPEED
   end
  
   #Добавление/отцепка вагонов
   def add_carriage
-    speed.zero? ? self.carriages_qty += 1 : ( puts 'Прежде чем добавить вагон остановите поезд.' )
+    speed.zero? ? add_carriage! : ( puts 'Прежде чем добавить вагон остановите поезд.' )
   end
 
   def unhook_carriage
-    if speed.zero? && carriages_qty.positive?
-      self.carriages_qty -= 1 
-    else
-      puts 'Прежде чем отцепить вагон остановите поезд.' if speed.positive?
-      puts "Нечего отцеплять. Кол-во вагонов: #{carriages_qty}" if carriages_qty.zero?
-    end
+    speed.zero? ? unhook_carriage! : (puts 'Прежде чем отцепить вагон остановите поезд.') 
   end
 
   #Присвоение маршрута
@@ -92,5 +87,18 @@ class Train
     self.stop
     station.take_the_train(self)
     @current_station = station
+  end
+
+  #Скрытие деталей реализации. вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
+  def add_carriage!
+    carriage = CargoCarriage.new if self.type.eql?(:cargo)
+    carriage = PassengerCarriage.new if self.type.eql?(:passenger)
+
+    self.carriages.push(carriage)
+  end
+
+  #Скрытие деталей реализации. вызов осуществляется только из метода unhook_carriage после прохождения необходимых проверок
+  def unhook_carriage!
+    self.carriages.count.positive? ? self.carriages.pop : ( puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" )
   end
 end
