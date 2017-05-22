@@ -70,11 +70,7 @@ class Controller
       print '1 - добавить станцию, 2 - удалить станцию: ' 
       choice = gets.to_i
 
-      if choice == 1
-        add_station_to_route(route)
-      else
-        remove_station(route)
-      end
+      [1,2].include?(choice) ? choice == 1 ? add_station_to_route(route) : remove_station(route) : (puts 'Некорректное действие')
     end
     gets
   end
@@ -112,14 +108,6 @@ class Controller
     end
   end
 
-
-
-
-
-
-
-
-
   def create_train
     system 'clear'
     puts 'Для создания поезда введите его номер и тип:'
@@ -130,11 +118,9 @@ class Controller
     train_type = gets.to_i
 
     [1,2].include?(train_type) ? create_train!(number, train_type) : (puts 'Некорректный ввод. Повторите действие.')
-
   end
 
   def display_all_trains
-    system 'clear'
     puts self.trains.inspect # для отладки
 
     puts 'Список всех поездов.'
@@ -152,6 +138,9 @@ class Controller
     create_carriage(train.type) 
 
     @carriage ? self.trains[train_number].add_carriage(@carriage) : (puts 'Not ok')
+    system 'clear'
+    puts 'Вагон добавлен'
+    gets
   end
 
   def remove_carriage
@@ -204,18 +193,15 @@ class Controller
     puts 'Выберите действие.'
     puts '1 - Создать станцию' #done
     puts '2 - Создать маршрут' #done
-    puts '3 - Редактировать маршрут (добавить/удалить станцию)' 
+    puts '3 - Редактировать маршрут (добавить/удалить станцию)' #done
     puts '4 - Создать поезд' #done
-    #puts '5 - Список поездов'
+    puts '5 - Управление движением поезда'
     puts '6 - Добавить вагон' #done
     puts '7 - Отцепить вагон' #done
     puts '8 - Назначить поезду маршрут' #done
-    #puts '8 - Управление движением поезда'
-    puts '9 - Список всех станций c поездами' 
+    puts '9 - Список всех станций c поездами' #done
     puts '0 - Exit' #done
   end
-
-  def 
 
   def user_choice
     user_choice = gets.to_i
@@ -233,6 +219,7 @@ class Controller
     when 4
       create_train
     when 6
+      system 'clear'
       add_carriage_to_train
     when 7
       remove_carriage
