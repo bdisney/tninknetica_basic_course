@@ -17,11 +17,11 @@ class Route
   end
 
   def remove_station!(station)
-    if self.stations.include?(station) 
+    if station.trains.empty?
       self.stations.delete(station) 
-      puts "Станция #{station} успешно удалена из машртуа #{self.stations.first.title} - #{self.stations.last.title}."
+      puts "Станция #{station.title} успешно удалена из машртуа #{self.stations.first.title} - #{self.stations.last.title}."
     else
-      puts "Станции с названием #{station.title} не содержится в маршруте."
+      puts "Нельзя удалить станцию с находящимися на ней поездами. Переместите их."
     end
   end
 end

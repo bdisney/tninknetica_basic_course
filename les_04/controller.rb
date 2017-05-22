@@ -39,6 +39,7 @@ class Controller
   end 
 
   def set_route
+    system 'clear'
     train_number = train_selection
     return unless train_number
 
@@ -81,6 +82,7 @@ class Controller
   def add_station_to_route(route)
     system 'clear'
     stations_for_adding = @stations - route.stations
+
     if stations_for_adding.empty?
       puts "Чтобы добавить станцию сначала создайте ее."
     else
@@ -94,14 +96,21 @@ class Controller
     end
   end
 
-  # def remove_station(route)
-  #   stations_list
-  #   print 'Выберите станцию для удаления: '
-  #   station_number = gets.to_i - 1
+  def remove_station(route)
+    stations_for_deleting = route.stations - [route.stations.first] - [route.stations.last]
+    puts stations_for_deleting.inspect #для отладки
 
-  #   remove_station!(self.stations[station_number])
+    if stations_for_deleting.empty?
+      puts 'Нельзя удалить начальную и конечную станции маршрута.'
+    else
+      stations_for_deleting.each.with_index(1) {|station, index| puts "#{index}. #{station.title}"}
 
-  # end
+      print 'Выберите станцию для удаления: '
+      station_number = gets.to_i - 1
+
+      stations_for_deleting[station_number] ? route.remove_station!(stations_for_deleting[station_number]) : (puts 'Некорректный номер станции')
+    end
+  end
 
 
 
@@ -125,11 +134,12 @@ class Controller
   end
 
   def display_all_trains
-puts self.trains.inspect # для отладки
+    system 'clear'
+    puts self.trains.inspect # для отладки
 
     puts 'Список всех поездов.'
     self.trains.each.with_index(1) do |(number, train), index|
-      puts "Поезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}"
+      puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}"
     end
   end
 
