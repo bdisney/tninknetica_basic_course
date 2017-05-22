@@ -51,6 +51,66 @@ class Controller
     self.routes[route_number].nil? ? (puts 'Маршрута с таким номером не найдено.') : self.trains[train_number].set_route(routes[route_number])
   end
 
+  def edit_route
+    system 'clear'
+    display_routes
+    print 'Выберите маршрут для редактирования, указав его номер: '
+    route_number = gets.to_i - 1 
+
+    route = self.routes[route_number]
+
+    if route.nil? 
+      puts 'Маршрута с таким номером не найдено.'
+    else
+      system "clear"
+      puts "Список станций в маршруте #{route.stations.first.title} - #{route.stations.last.title}:"
+      route.stations_list
+
+      print '1 - добавить станцию, 2 - удалить станцию: ' 
+      choice = gets.to_i
+
+      if choice == 1
+        add_station_to_route(route)
+      else
+        remove_station(route)
+      end
+    end
+    gets
+  end
+
+  def add_station_to_route(route)
+    system 'clear'
+    stations_for_adding = @stations - route.stations
+    if stations_for_adding.empty?
+      puts "Чтобы добавить станцию сначала создайте ее."
+    else
+      puts 'Можно добавить следующие станции:'
+      stations_for_adding.each.with_index(1) {|station, index| puts "#{index}. #{station.title}"} 
+
+      print 'Укажите номер станции, которую хотите добавить: '
+      station_number = gets.to_i - 1
+
+      stations_for_adding[station_number] ? route.add_station!(stations_for_adding[station_number]) : (puts 'Некорректный номер станции')
+    end
+  end
+
+  # def remove_station(route)
+  #   stations_list
+  #   print 'Выберите станцию для удаления: '
+  #   station_number = gets.to_i - 1
+
+  #   remove_station!(self.stations[station_number])
+
+  # end
+
+
+
+
+
+
+
+
+
   def create_train
     system 'clear'
     puts 'Для создания поезда введите его номер и тип:'
@@ -118,8 +178,7 @@ puts self.trains.inspect # для отладки
       stations.each.with_index(1) do |station, index|
         puts "#{index}. #{station.title}"
         station.trains_at_the_station
-        end 
-
+      end 
     else
       puts 'Станций нет.'
     end
@@ -135,14 +194,14 @@ puts self.trains.inspect # для отладки
     puts 'Выберите действие.'
     puts '1 - Создать станцию' #done
     puts '2 - Создать маршрут' #done
-    #puts '3 - Редактировать маршрут (добавить/удалить станцию)'
+    puts '3 - Редактировать маршрут (добавить/удалить станцию)' 
     puts '4 - Создать поезд' #done
     #puts '5 - Список поездов'
     puts '6 - Добавить вагон' #done
     puts '7 - Отцепить вагон' #done
     puts '8 - Назначить поезду маршрут' #done
     #puts '8 - Управление движением поезда'
-    puts '9 - Список всех станций' 
+    puts '9 - Список всех станций c поездами' 
     puts '0 - Exit' #done
   end
 
@@ -160,7 +219,7 @@ puts self.trains.inspect # для отладки
       stations.size > 1 ? create_route : (puts 'Для создания маршрута нужно хотя бы 2 станции.')
       gets
     when 3
-      edit_route
+      routes.empty? ? (puts 'Маршрутов не создано.') : edit_route 
     when 4
       create_train
     when 6

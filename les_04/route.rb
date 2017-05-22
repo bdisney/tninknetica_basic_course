@@ -11,12 +11,12 @@ class Route
     self.stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
   end
 
-  def add_station(station)
+  def add_station!(station)
     self.stations.insert(-2, station)
-    puts "Станция «#{station.title}» добавлена в маршрут #{self}."
+    puts "Станция «#{station.title}» добавлена в маршрут #{self.stations.first.title} - #{self.stations.last.title}."
   end
 
-  def remove_station(station)
+  def remove_station!(station)
     if self.stations.include?(station) 
       self.stations.delete(station) 
       puts "Станция #{station} успешно удалена из машртуа #{self.stations.first.title} - #{self.stations.last.title}."
