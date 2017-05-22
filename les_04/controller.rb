@@ -1,10 +1,10 @@
 class Controller
-  attr_reader :list_of_stations, :list_of_routes, :list_of_trains
+  attr_reader :list_of_stations, :routes, :trains
 
   def initialize
     @list_of_stations = []
-    @list_of_routes = []
-    @list_of_trains = []
+    @routes = []
+    @trains = {}
   end
 
   def create_station
@@ -38,6 +38,19 @@ class Controller
     end
   end 
 
+  def set_route
+    train_number = train_selection
+    return unless train_number
+
+    puts "\nСписок доступных маршрутов:"
+    display_routes
+
+    print 'Выберите маршрут указав его порядковый номер: '
+    route_number = gets.to_i - 1
+
+    self.routes[route_number].nil? ? (puts 'Маршрута с таким номером не найдено.') : self.trains[train_number].set_route(routes[route_number])
+  end
+
   # def edit_route
   #   display_list_of_routes
   #   puts 'Выберите маршрут для редактирования.'
@@ -58,12 +71,58 @@ class Controller
     system 'clear'
     puts 'Для создания поезда введите его номер и тип:'
     print 'Введите номер: '
-    number = gets.strip.downcase
+    number = gets.to_i
 
     print 'Введите тип. 1 - грузовой, 2 - пассажирский: '
     train_type = gets.to_i
 
     [1,2].include?(train_type) ? create_train!(number, train_type) : (puts 'Некорректный ввод. Повторите действие.')
+  end
+
+  def display_all_trains
+    puts 'Список всех поездов.'
+    self.trains.each do |(number, train), index|
+      puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}"
+    end
+  end
+
+  def add_carriage_to_train
+    puts 'Добавление вагона.'
+    train_number = train_selection
+    return unless train_number
+
+    train = self.trains[train_number]
+    create_carriage(train.type) 
+
+    @carriage ? self.trains[train_number].add_carriage(@carriage) : (puts 'Not ok')
+  end
+
+  def remove_carriage
+    puts 'Отцепить вагон.'
+    train_number = train_selection
+    return unless train_number
+
+    self.trains[train_number].unhook_carriage
+    gets
+  end
+
+  def create_carriage(train_type)
+    @carriage = CargoCarriage.new if train_type.eql?(:cargo) 
+    @carriage = PassengerCarriage.new if train_type.eql?(:passenger)
+  end
+
+  def train_selection
+    display_all_trains
+    print 'Выберите поезд, указав его №: '
+    train_number = gets.to_i
+
+    if self.trains.has_key?(train_number)
+      return train_number
+    else
+      puts "Поезда с таким номером не существует."
+      gets
+      return
+    end
   end
 
   def display_all_stations
@@ -76,9 +135,9 @@ class Controller
     gets
   end
 
-  # def display_list_of_routes
-  #   list_of_routes.each.with_index(1) {|route, index| puts "#{index}. #{route.start_station.title} - #{route.end_station.title}"}
-  # end
+  def display_routes
+    routes.empty? ? (puts 'Маршрутов нет.') : routes.each.with_index(1) {|route, index| puts "#{index}. #{route.start_station.title} - #{route.end_station.title}"}
+  end
 
   def main_actions
     system 'clear'
@@ -86,13 +145,14 @@ class Controller
     puts '1 - Создать станцию' #done
     puts '2 - Создать маршрут' #done
     #puts '3 - Редактировать маршрут (добавить/удалить станцию)'
-    puts '4 - Создать поезд'
+    puts '4 - Создать поезд' #done
     #puts '5 - Список поездов'
-    #puts '6 - Добавить/отцепить вагон'
-    #puts '7 - Назначить поезду маршрут'
+    puts '6 - Добавить вагон' #done
+    puts '7 - Отцепить вагон' #done
+    puts '8 - Назначить поезду маршрут' #done
     #puts '8 - Управление движением поезда'
-    puts '9 - Список всех станций'
-    puts '0 - Exit'
+    puts '9 - Список всех станций' 
+    puts '0 - Exit' #done
   end
 
   def 
@@ -112,6 +172,12 @@ class Controller
       edit_route
     when 4
       create_train
+    when 6
+      add_carriage_to_train
+    when 7
+      remove_carriage
+    when 8
+      set_route
     when 9
       system 'clear'
       display_all_stations
@@ -131,17 +197,18 @@ class Controller
   end
 
   def add_route_to_list(route)
-    self.list_of_routes.push(route)
+    self.routes.push(route)
   end
 
   def create_train!(number, train_type)
     train_type == 1 ? train = CargoTrain.new(number) : train = PassengerTrain.new(number)
     add_train_to_list(train)
     puts "#{Train::TYPE[train.type]} поезд № #{train.number} успешно создан."
+    gets
   end
 
   def add_train_to_list(train)
-    list_of_trains.push(train)
+    self.trains[train.number] = train
   end
 
   def add_station_to_list(station)
