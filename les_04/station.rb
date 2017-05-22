@@ -22,13 +22,16 @@ class Station
   end
 
   def trains_at_the_station
-    puts 'Список поездов на станции: '
-
-    self.trains.each.with_index(1) do |train, index|
-      puts "\n#{index}. \tПоезд №: #{train.number}"
-      puts "\tТип: #{train.type}"
-      puts "\tКол-во вагонов: #{train.carriages_qty}"
-      puts "\tМаршрут следования: #{train.route.stations.first.title} - #{train.route.stations.last.title}"
+    if self.trains.empty?
+      puts '  ..поездов нет.'
+    else
+      puts '  ..cписок поездов на станции:'
+      self.trains.each do |train|
+        puts "\tпоезд №: #{train.number}"
+        puts "\tтип: #{Train::TYPE[train.type]}"
+        puts "\tкол-во вагонов: #{train.carriages.count}"
+        puts "\tмаршрут следования: #{train.route.stations.first.title} - #{train.route.stations.last.title}"
+      end
     end
   end
 
