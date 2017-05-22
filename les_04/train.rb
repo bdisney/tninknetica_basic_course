@@ -9,10 +9,10 @@ class Train
     @carriages = []
     @speed = INITIAL_SPEED
   end
- 
-  #Добавление/отцепка вагонов
-  def add_carriage
-    speed.zero? ? add_carriage! : ( puts 'Прежде чем добавить вагон остановите поезд.' )
+
+  #Скрытие деталей реализации. Вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
+  def add_carriage(carriage)
+    self.carriages.push(carriage) if speed.zero?
   end
 
   def unhook_carriage
@@ -27,6 +27,7 @@ class Train
 
     self.current_station = route.stations.first
     puts "Текущая станция: #{current_station.title}"
+    gets
   end
 
   #Перемещение по маршруту
@@ -79,26 +80,23 @@ class Train
 
   #см. комментарий выше
   def stop
-    self.speed = 0
+    @speed = 0
   end
 
   #Текущая станция назначается только при присвоении маршрута и изменяется при перемещении между станциями маршрута.
   def current_station=(station)
-    self.stop
+    stop
     station.take_the_train(self)
     @current_station = station
   end
 
-  #Скрытие деталей реализации. Вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
-  def add_carriage!
-    carriage = CargoCarriage.new if self.type.eql?(:cargo)
-    carriage = PassengerCarriage.new if self.type.eql?(:passenger)
-
-    self.carriages.push(carriage)
-  end
-
   #Скрытие деталей реализации. Вызов осуществляется только из метода unhook_carriage после прохождения необходимых проверок
   def unhook_carriage!
-    self.carriages.count.positive? ? self.carriages.pop : ( puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" )
+    if self.carriages.count.positive? 
+      self.carriages.pop
+      puts 'Вагон отцеплен'
+    else
+      puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" 
+    end
   end
 end
