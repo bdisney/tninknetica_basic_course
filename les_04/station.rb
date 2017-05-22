@@ -33,6 +33,6 @@ class Station
   end
 
   def trains_by_type(type)
-    self.trains.select.count { |train| train.type if train.type == type}
+    self.trains.select { |train| train.type if train.type == type }.count
   end
 end
