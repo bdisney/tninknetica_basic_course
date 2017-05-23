@@ -10,7 +10,6 @@ class Train
     @speed = INITIAL_SPEED
   end
 
-  #Скрытие деталей реализации. Вызов осуществляется только из метода add_carriage после прохождения необходимых проверок
   def add_carriage(carriage)
     self.carriages.push(carriage) if speed.zero?
   end
@@ -40,11 +39,6 @@ class Train
     end
   end
 
-  #Инфо-методы
-  def current_speed
-    self.speed
-  end
-
   def next_station
     position = self.route.stations.index(current_station)
 
@@ -57,8 +51,9 @@ class Train
     current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
   end
 
+  #Необязательный метод
   def about
-    puts "Тип: #{TYPE[self.type]}, вагонов: #{self.carriages_qty}, скорость: #{self.speed}"
+    puts "Тип: #{TYPE[self.type]}, вагонов: #{self.carriages.count}, скорость: #{self.speed}"
   end
 
   protected
@@ -98,5 +93,10 @@ class Train
     else
       puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" 
     end
+  end
+
+  #Вызов осуществляется только внутри класса Train и его подклассов
+  def current_speed
+    self.speed
   end
 end
