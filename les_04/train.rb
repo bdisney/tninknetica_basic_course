@@ -31,8 +31,8 @@ class Train
   end
 
   #Перемещение по маршруту
-  def move(direction = :forward || :back)
-    if self.route
+  def move(direction = :forward)
+    if route
       sequent_station = (direction == :back ? prev_station : next_station)
       sequent_station ? move_to(sequent_station) : (puts 'Движение в выбранном направлении невозможно.')
     else 
@@ -46,15 +46,15 @@ class Train
   end
 
   def next_station
-    position = self.route.stations.index(self.current_station)
+    position = self.route.stations.index(current_station)
 
     self.current_station == self.route.stations.last ? ( puts 'Конечная' ) : self.route.stations[position + 1] 
   end
 
   def prev_station
-    position = self.route.stations.index(self.current_station)
+    position = self.route.stations.index(current_station)
   
-    self.current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
+    current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
   end
 
   def about
@@ -75,7 +75,7 @@ class Train
   #Управление скоростью возможно при перемещении между станциями в рамках маршрута и...
   #...в текущей реализации, только из метода move_to 
   def increase_speed(value)
-    value.positive? ? self.speed = value : (puts 'Некорректное значение для увеличения скорости.')
+    value.positive? ? @speed = value : (puts 'Некорректное значение для увеличения скорости.')
   end
 
   #см. комментарий выше

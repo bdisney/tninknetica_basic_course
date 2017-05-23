@@ -120,9 +120,31 @@ class Controller
     [1,2].include?(train_type) ? create_train!(number, train_type) : (puts 'Некорректный ввод. Повторите действие.')
   end
 
-  def display_all_trains
-    puts self.trains.inspect # для отладки
+  def move_train
+    puts 'Управление движением поезда.'
+    train_number = train_selection
+    return unless train_number
 
+    train = self.trains[train_number]
+    puts "Маршрут #{train.route.stations.first.title} - #{train.route.stations.last.title}"
+    puts "Текущая станция: #{train.current_station.title}" 
+    puts "Слудующая станция: #{train.next_station.title}" if train.next_station
+    gets
+
+    print "1 - отправиться на след. станцию. 2 - отправиться на пред. станцию: "
+    choice = gets.to_i
+
+    if [1,2].include?(choice) 
+      choice == 2 ? train.move(direction = :back) : train.move  
+      gets
+    else
+      puts "Некорректная команда."
+      gets
+    end
+  end
+
+  def display_all_trains
+    #puts self.trains.inspect # для отладки
     puts 'Список всех поездов.'
     self.trains.each.with_index(1) do |(number, train), index|
       puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}"
@@ -195,7 +217,7 @@ class Controller
     puts '2 - Создать маршрут' #done
     puts '3 - Редактировать маршрут (добавить/удалить станцию)' #done
     puts '4 - Создать поезд' #done
-    puts '5 - Управление движением поезда'
+    puts '5 - Управление движением поезда' #done
     puts '6 - Добавить вагон' #done
     puts '7 - Отцепить вагон' #done
     puts '8 - Назначить поезду маршрут' #done
@@ -218,6 +240,9 @@ class Controller
       routes.empty? ? (puts 'Маршрутов не создано.') : edit_route 
     when 4
       create_train
+    when 5
+      system 'clear'
+      move_train
     when 6
       system 'clear'
       add_carriage_to_train
