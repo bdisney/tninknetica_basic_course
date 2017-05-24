@@ -1,4 +1,7 @@
 require_relative 'controller.rb'
+
+require_relative 'modules/vendor.rb'
+
 require_relative 'route.rb'
 require_relative 'station.rb'
 
@@ -7,6 +10,8 @@ require_relative 'passenger_train.rb'
 
 require_relative 'cargo_carriage.rb'
 require_relative 'passenger_carriage.rb'
+
+
 
 system 'clear'
 

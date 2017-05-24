@@ -1,4 +1,6 @@
 class Train
+  include Vendor
+  
   TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0
 
