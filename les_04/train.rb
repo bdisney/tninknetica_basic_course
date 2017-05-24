@@ -34,6 +34,7 @@ class Train
     if destination 
       increase_speed(5)
       self.current_station.send_train(self)
+
       increase_speed(55)
       self.current_station = destination 
     else 
@@ -44,7 +45,7 @@ class Train
   def next_station
     position = self.route.stations.index(current_station)
 
-    self.current_station == self.route.stations.last ? ( puts 'Конечная' ) : self.route.stations[position + 1] 
+    current_station == self.route.stations.last ? ( puts 'Конечная' ) : self.route.stations[position + 1] 
   end
 
   def prev_station
@@ -70,7 +71,7 @@ class Train
   # end
 
   #Управление скоростью возможно при перемещении между станциями в рамках маршрута и...
-  #...в текущей реализации, только из метода move_to 
+  #...в текущей реализации, только из метода move
   def increase_speed(value)
     value.positive? ? @speed = value : (puts 'Некорректное значение для увеличения скорости.')
   end
