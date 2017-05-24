@@ -11,7 +11,7 @@ class Train
   end
 
   def add_carriage(carriage)
-    self.carriages.push(carriage) if speed.zero?
+    self.carriages << carriage if speed.zero?
   end
 
   def unhook_carriage
