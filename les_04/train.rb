@@ -30,12 +30,14 @@ class Train
   end
 
   #Перемещение по маршруту
-  def move(direction = :forward)
-    if route
-      sequent_station = (direction == :back ? prev_station : next_station)
-      sequent_station ? move_to(sequent_station) : (puts 'Движение в выбранном направлении невозможно.')
+  def move(destination)
+    if destination 
+      increase_speed(5)
+      self.current_station.send_train(self)
+      increase_speed(55)
+      self.current_station = destination 
     else 
-      puts 'Прежде чем начать движение необходимо назначить маршрут.'
+      (puts 'Движение в выбранном направлении невозможно.')
     end
   end
 
@@ -58,14 +60,14 @@ class Train
 
   protected
 
-  #Вызов метода должен осуществляться только из метода move и невозможен из вне
-  def move_to(sequent_station)
-    increase_speed(5)
-    self.current_station.send_train(self)
-    increase_speed(55)
-    self.current_station = sequent_station
-    stop
-  end
+  # #Вызов метода должен осуществляться только из метода move и невозможен из вне
+  # def move_to(sequent_station)
+  #   increase_speed(5)
+  #   self.current_station.send_train(self)
+  #   increase_speed(55)
+  #   self.current_station = sequent_station
+  #   stop
+  # end
 
   #Управление скоростью возможно при перемещении между станциями в рамках маршрута и...
   #...в текущей реализации, только из метода move_to 
