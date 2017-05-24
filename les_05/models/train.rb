@@ -4,12 +4,19 @@ class Train
   TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0
 
+  @@trains = {}
+
   attr_reader :type, :route, :current_station, :number, :speed, :carriages
 
   def initialize(number)
     @number = number
     @carriages = []
     @speed = INITIAL_SPEED
+    @@trains[number] = self
+  end
+
+  def self.find_by(number)
+    @@trains[number]
   end
 
   def add_carriage(carriage)
