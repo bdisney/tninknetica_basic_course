@@ -183,7 +183,7 @@ class Controller
       print "1 - отправиться на след. станцию. 2 - отправиться на пред. станцию: "
       choice = gets.to_i
 
-      [1,2].include?(choice) ? ( choice == 2 ? train.move(direction = :back) : train.move ) : ( puts "Некорректная команда." )
+      [1,2].include?(choice) ? ( choice == 1 ? train.move(train.next_station) : train.move(train.prev_station) ) : ( puts "Некорректная команда." )
       gets
     else
       puts "Прежде чем начать движение назначьте поезду маршрут."
