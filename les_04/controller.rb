@@ -205,7 +205,7 @@ class Controller
     train = self.trains[train_number]
     create_carriage(train.type) 
 
-    @carriage ? self.trains[train_number].add_carriage(@carriage) : (puts 'BUG BUG BUG')
+    @carriage ? train.add_carriage(@carriage) : (puts 'BUG BUG BUG')
     system 'clear'
     puts 'Вагон добавлен'
     gets

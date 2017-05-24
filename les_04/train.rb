@@ -11,7 +11,7 @@ class Train
   end
 
   def add_carriage(carriage)
-    self.carriages << carriage if speed.zero?
+    self.type.eql?(carriage.type) ? ( self.carriages << carriage if speed.zero? ) : ( puts "Тип поезда и вагона не соответствуют." )
   end
 
   def unhook_carriage
