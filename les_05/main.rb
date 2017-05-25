@@ -1,6 +1,7 @@
 require_relative 'controllers/controller.rb'
 
 require_relative 'modules/vendor.rb'
+require_relative 'modules/instance_counter.rb'
 
 require_relative 'models/route.rb'
 require_relative 'models/station.rb'
@@ -10,8 +11,6 @@ require_relative 'models/passenger_train.rb'
 
 require_relative 'models/cargo_carriage.rb'
 require_relative 'models/passenger_carriage.rb'
-
-
 
 system 'clear'
 

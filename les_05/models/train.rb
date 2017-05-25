@@ -1,5 +1,6 @@
 class Train
   include Vendor
+  include InstanceCounter
   
   TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0
@@ -13,6 +14,7 @@ class Train
     @carriages = []
     @speed = INITIAL_SPEED
     @@trains[number] = self
+    register_instance
   end
 
   def self.find_by(number)
