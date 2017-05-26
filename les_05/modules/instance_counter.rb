@@ -6,13 +6,11 @@ module InstanceCounter
 
   module ClassMethods
     def instance_qty
-      puts "Oбъектов класса #{self}: #{@instances}"
+      @instances
     end
 
     private
     
-    # Можно было сделать и без аргумента. 
-    # Но я решил оставить, расчитывая, что в будущем появится метод unregister_instance
     def count_instances(instance) 
       @instances ||= 0
       @instances += instance
