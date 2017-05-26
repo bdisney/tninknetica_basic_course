@@ -5,6 +5,7 @@ class Station
 
   def initialize(title)
     @title = title
+    validate!
     @trains = []
     @@stations << self
   end
@@ -44,5 +45,12 @@ class Station
     else
       puts "Такого поезда на станции #{self.title} нет."
     end
+  end
+
+  protected
+
+  def validate!
+    raise 'Наименование станции должно быть не короче 3 и больше 15 символов.' if not (3..20).include?(self.title.length) || self.title.nil?
+    true
   end
 end
