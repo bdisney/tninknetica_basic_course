@@ -4,7 +4,7 @@ class Train
   
   TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0
-  NUMBER_FORMAT = /\w{3}-*\w{2}$/
+  NUMBER_FORMAT = /^[a-z0-9]{3}[-]?[a-z0-9]{2}$/i
 
   @@trains = {}
 
