@@ -2,9 +2,11 @@ class Route
   attr_reader :stations, :start_station, :end_station
 
   def initialize(start_station, end_station)
-    @stations = [start_station, end_station]
     @start_station = start_station
     @end_station = end_station
+    validate!
+
+    @stations = [start_station, end_station]
   end
 
   def stations_list
@@ -24,4 +26,11 @@ class Route
       puts "Нельзя удалить станцию с находящимися на ней поездами. Переместите их."
     end
   end
+
+  protected
+
+  def validate!
+    raise 'Нельзя добавить несуществующие станции в маршрут.' if !Station.all.include?(start_station && end_station)
+  end
+
 end
