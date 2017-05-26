@@ -1,4 +1,6 @@
 class Station
+  include IsValid
+  
   attr_reader :title, :trains
 
   @@stations= []

@@ -1,6 +1,7 @@
 class Train
   include Vendor
   include InstanceCounter
+  include IsValid
   
   TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
   INITIAL_SPEED = 0

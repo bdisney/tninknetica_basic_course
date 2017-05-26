@@ -1,4 +1,6 @@
 class Route
+  include IsValid
+  
   attr_reader :stations, :start_station, :end_station
 
   def initialize(start_station, end_station)
@@ -31,6 +33,7 @@ class Route
 
   def validate!
     raise 'Нельзя добавить несуществующие станции в маршрут.' if !Station.all.include?(start_station && end_station)
+    true
   end
 
 end
