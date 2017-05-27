@@ -1,179 +1,164 @@
 class Controller
-  attr_reader :stations, :routes, :trains
-
-  def initialize
-    @stations = []
-    @routes = []
-    @trains = {}
-  end
-
   def main_actions
-    system 'clear'
-    puts 'Выберите действие.'
-    puts '1 - Создать станцию' #done
-    puts '2 - Создать маршрут' #done
-    puts '3 - Редактировать маршрут (добавить/удалить станцию)' #done
-    puts '4 - Создать поезд' #done
-    puts '5 - Управление движением поезда' #done
-    puts '6 - Добавить вагон' #done
-    puts '7 - Отцепить вагон' #done
-    puts '8 - Назначить поезду маршрут' #done
-    puts '9 - Список всех станций c поездами' #done
-    puts '0 - Exit' #done
+    puts 'Добро пожаловать в он-лайн депо!'
+    puts '1 - Создать станцию' 
+    puts '2 - Создать маршрут' 
+    puts '3 - Редактировать маршрут (добавить/удалить станцию)' 
+    puts '4 - Создать поезд' 
+    puts '5 - Управление движением поезда' 
+    puts '6 - Добавить вагон' 
+    puts '7 - Отцепить вагон' 
+    puts '8 - Назначить поезду маршрут' 
+    puts '9 - Список всех станций c поездами' 
+    puts '0 - Exit' 
+    print 'Выберите действие: '
   end
-
-  # def user_choice
-  #   user_choice = gets.to_i
-  # end
 
   def execute_action(action)
     case action
     when 1
-      create_station
+      render(:create_station, true) ; clear_screen
     when 2
-      stations.size > 1 ? create_route : (puts 'Для создания маршрута нужно хотя бы 2 станции.')
-      gets
+      Station.all.size > 1 ? render(:create_route, true) : (puts 'Для создания маршрута нужно хотя бы 2 станции.')
+      clear_screen
     when 3
-      routes.empty? ? (puts 'Маршрутов не создано.') : edit_route 
+      render(:edit_route) ; clear_screen
     when 4
-      create_train
+      render(:create_train, true) ; clear_screen
     when 5
-      system 'clear'
-      move_train 
+      render(:move_train) ; clear_screen
     when 6
-      system 'clear'
-      add_carriage_to_train
+      render(:add_carriage) ; clear_screen
     when 7
-      remove_carriage
+      render(:remove_carriage) ; clear_screen
     when 8
-      set_route
+      render(:set_route) ; clear_screen
     when 9
-      system 'clear'
-      display_all_stations
+      render(:display_all_stations) ; clear_screen
     when 0
       abort
     else
-      puts "Неизвестная команда!"
+      puts 'Некорректный ввод.'
     end
   end
 
-  #Все нижеследующие методы приватные. Вызов осуществляется только внутри класса и, в текущей реализации, у класса нет наследников.
   private
 
-  def create_station
-    system 'clear'
+  def render(method, repeat = false)
+    self.send(method)
+  rescue RuntimeError, TypeError => e
+    puts e.message
+    retry if repeat
+  end
 
+  def create_station
     print 'Введите название станции: '
     title = gets.strip.downcase.capitalize
-    station = Station.new(title)
 
-    add_station_to_list(station)  
+    station = Station.new(title)
     puts "Станция #{station.title} успешно создана."
-    gets
   end
 
   def create_route
-    system 'clear'
-    puts 'Для создания маршрута выберите начальную и конечную станции.'
+    puts "\nДля создания маршрута выберите начальную и конечную станции."
     display_all_stations
 
     print 'Выберите начальную станцию, указав ее порядковый номер: '
     start_station_id = gets.to_i - 1
+    start_station = Station.all[start_station_id] 
 
-    print 'Выберите  конечную станцию, указав ее порядковый номер: '
+    print 'Выберите конечную станцию, указав ее порядковый номер: '
     end_station_id = gets.to_i - 1
+    end_station = Station.all[end_station_id]
 
-    self.stations[start_station_id] && self.stations[end_station_id] ? create_route!(start_station_id, end_station_id) : (puts 'Введен несуществующий номер станции')
+    start_station && end_station ? create_route!(start_station, end_station) : (raise "\nВведен несуществующий номер станции")
   end 
 
   def set_route
-    system 'clear'
-    train_number = train_selection
-    return unless train_number
+    if Route.all.any? 
+      train = select_train 
+      display_routes
 
-    puts "\nСписок доступных маршрутов:"
-    display_routes
+      print 'Выберите маршрут указав его порядковый номер: '
+      route_number = gets.to_i - 1
+      route = Route.all[route_number]
 
-    print 'Выберите маршрут указав его порядковый номер: '
-    route_number = gets.to_i - 1
-
-    self.routes[route_number].nil? ? (puts 'Маршрута с таким номером не найдено.') : self.trains[train_number].set_route(routes[route_number])
+      route.nil? ? (raise "\nМаршрута с таким номером не найдено.") : train.set_route(route)
+      puts 'Маршрут назначен.'
+    else
+      raise "\nПрежде чем назначить маршрут, создайте его."
+    end
   end
 
   def edit_route
-    system 'clear'
-    display_routes
+    Route.all.any? ? display_routes : ( raise "\nПрежде чем редактировать маршрут, создайте его.")
+
     print 'Выберите маршрут для редактирования, указав его номер: '
     route_number = gets.to_i - 1 
-
-    route = self.routes[route_number]
+    route = Route.all[route_number]
 
     if route.nil? 
-      puts 'Маршрута с таким номером не найдено.'
+      raise "\nМаршрута с таким номером не найдено."
     else
-      system "clear"
       puts "Список станций в маршруте #{route.stations.first.title} - #{route.stations.last.title}:"
       route.stations_list
 
       print '1 - добавить станцию, 2 - удалить станцию: ' 
       choice = gets.to_i
 
-      [1,2].include?(choice) ? choice == 1 ? add_station_to_route(route) : remove_station(route) : (puts 'Некорректное действие')
+      [1,2].include?(choice) ? ( choice == 1 ? add_station_to_route(route) : remove_station(route) ) : (raise 'Некорректное действие')
     end
-    gets
   end
 
   def add_station_to_route(route)
-    system 'clear'
-    stations_for_adding = @stations - route.stations
+    stations_for_adding = Station.all - route.stations
 
-    if stations_for_adding.empty?
-      puts "Чтобы добавить станцию сначала создайте ее."
-    else
+    if stations_for_adding.any?
       puts 'Можно добавить следующие станции:'
       stations_for_adding.each.with_index(1) {|station, index| puts "#{index}. #{station.title}"} 
-
+         
       print 'Укажите номер станции, которую хотите добавить: '
       station_number = gets.to_i - 1
 
-      stations_for_adding[station_number] ? route.add_station!(stations_for_adding[station_number]) : (puts 'Некорректный номер станции')
+      stations_for_adding[station_number] ? route.add_station!(stations_for_adding[station_number]) : (raise 'Некорректный номер станции')
+      puts 'Маршрут обновлен.'
+    else
+      raise 'Чтобы добавить станцию сначала создайте ее.'
     end
   end
 
   def remove_station(route)
     stations_for_deleting = route.stations - [route.stations.first] - [route.stations.last]
 
-    if stations_for_deleting.empty?
-      puts 'Нельзя удалить начальную и конечную станции маршрута.'
-    else
+    if stations_for_deleting.any?
       stations_for_deleting.each.with_index(1) {|station, index| puts "#{index}. #{station.title}"}
 
       print 'Выберите станцию для удаления: '
       station_number = gets.to_i - 1
 
-      stations_for_deleting[station_number] ? route.remove_station!(stations_for_deleting[station_number]) : (puts 'Некорректный номер станции')
+      stations_for_deleting[station_number] ? route.remove_station!(stations_for_deleting[station_number]) : (raise 'Некорректный номер станции')
+      puts 'Маршрут обновлен.'
+    else
+      raise 'Нельзя удалить начальную и конечную станции маршрута.'
     end
   end
 
   def create_train
-    system 'clear'
     puts 'Для создания поезда введите его номер и тип:'
     print 'Введите номер: '
-    number = gets.to_i
+    number = gets.strip
 
     print 'Введите тип. 1 - грузовой, 2 - пассажирский: '
     train_type = gets.to_i
 
-    [1,2].include?(train_type) ? create_train!(number, train_type) : (puts 'Некорректный ввод. Повторите действие.')
+    [1,2].include?(train_type) ? create_train!(number, train_type) : (raise 'Некорректный ввод. Повторите действие.')
   end
 
   def move_train
     puts 'Управление движением поезда.'
-    train_number = train_selection
-    return unless train_number
+    train = select_train
 
-    train = self.trains[train_number]
-    if train.route
+    if train && train.route 
       puts "Маршрут #{train.route.stations.first.title} - #{train.route.stations.last.title}"
       puts "Текущая станция: #{train.current_station.title}" 
       puts "Следующая станция: #{train.next_station.title}" if train.next_station
@@ -183,101 +168,75 @@ class Controller
       print "1 - отправиться на след. станцию. 2 - отправиться на пред. станцию: "
       choice = gets.to_i
 
-      [1,2].include?(choice) ? ( choice == 1 ? train.move(train.next_station) : train.move(train.prev_station) ) : ( puts "Некорректная команда." )
-      gets
+      [1,2].include?(choice) ? ( choice == 1 ? train.move(train.next_station) : train.move(train.prev_station) ) : ( raise "Некорректная команда." )
+      puts "Поезд прибыл на станцию #{train.current_station.title}"
     else
-      puts "Прежде чем начать движение назначьте поезду маршрут."
-      gets
+      raise 'Прежде чем начать движение назначьте поезду маршрут.'
     end
   end
 
   def display_all_trains
-    puts 'Список всех поездов.'
-
-    self.trains.each.with_index(1) { |(number, train), index| puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}" }
+    Train.all.each.with_index(1) { |(number, train), index| puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}" }
   end
 
-  def add_carriage_to_train
-    puts 'Добавление вагона.'
-    train_number = train_selection
-    return unless train_number
+  def add_carriage
+    train = select_train
+    create_carriage(train.type)
 
-    train = self.trains[train_number]
-    create_carriage(train.type) 
-
-    @carriage ? train.add_carriage(@carriage) : (puts 'BUG BUG BUG')
-    system 'clear'
+    train.add_carriage!(@carriage) if @carriage 
     puts 'Вагон добавлен'
-    gets
   end
 
   def remove_carriage
-    puts 'Отцепить вагон.'
-    train_number = train_selection
-    return unless train_number
-
-    self.trains[train_number].unhook_carriage
-    gets
+    train = select_train
+    train.unhook_carriage
+    puts 'Вагон отцеплен.'
   end
 
-  def create_carriage(train_type)
-    @carriage = CargoCarriage.new if train_type.eql?(:cargo) 
-    @carriage = PassengerCarriage.new if train_type.eql?(:passenger)
+  def create_carriage(type)
+    @carriage = CargoCarriage.new if type.eql?(:cargo) 
+    @carriage = PassengerCarriage.new if type.eql?(:passenger)
   end
 
-  def train_selection
-    display_all_trains
+  def select_train
+    Train.all.any? ? display_all_trains : ( raise 'Поездов нет' )
+    
     print 'Выберите поезд, указав его №: '
-    train_number = gets.to_i
+    train_number = gets.strip
 
-    if self.trains.has_key?(train_number)
-      return train_number
-    else
-      puts "Поезда с таким номером не существует."
-      gets
-      return
-    end
+    train = Train.find_by(train_number) 
+    train ? train : ( raise 'Нет поезда с таким номером' )
   end
 
   def display_all_stations
-    if stations.any? 
+    if Station.all.any? 
       puts 'Список станций:'
-      stations.each.with_index(1) do |station, index|
+
+      Station.all.each.with_index(1) do |station, index|
         puts "#{index}. #{station.title}"
         station.trains_at_the_station
       end 
     else
       puts 'Станций нет.'
     end
-    gets
   end
 
   def display_routes
-    routes.empty? ? (puts 'Маршрутов нет.') : routes.each.with_index(1) {|route, index| puts "#{index}. #{route.start_station.title} - #{route.end_station.title}"}
+    Route.all.each.with_index(1) {|route, index| puts "#{index}. #{route.start_station.title} - #{route.end_station.title}"}
   end
 
-  def create_route!(start_station_id, end_station_id)
-    route = Route.new(self.stations[start_station_id], self.stations[end_station_id])
-    add_route_to_list(route)
+  def create_route!(start_station, end_station)
+    start_station != end_station ? route = Route.new(start_station, end_station) : (raise 'Начальная и конечная станции не должны совпадать.')
     puts "Маршрут #{route.start_station.title} - #{route.end_station.title} успешно создан."
-  end
-
-  def add_route_to_list(route)
-    self.routes.push(route)
   end
 
   def create_train!(number, train_type)
     train_type == 1 ? train = CargoTrain.new(number) : train = PassengerTrain.new(number)
-    add_train_to_list(train)
     puts "#{Train::TYPE[train.type]} поезд № #{train.number} успешно создан."
+  end
+
+  def clear_screen
     gets
-  end
-
-  def add_train_to_list(train)
-    self.trains[train.number] = train
-  end
-
-  def add_station_to_list(station)
-    stations.push(station)
+    system 'clear'
   end
 end
