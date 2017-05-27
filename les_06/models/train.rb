@@ -26,26 +26,27 @@ class Train
     false
   end
 
+  def self.all
+    @@trains
+  end
+
   def self.find_by(number)
     @@trains[number]
   end
 
-  def add_carriage(carriage)
-    self.type.eql?(carriage.type) ? ( self.carriages << carriage if speed.zero? ) : ( puts "Тип поезда и вагона не соответствуют." )
+  def add_carriage!(carriage)
+    self.type.eql?(carriage.type) ? ( self.carriages << carriage if speed.zero? ) : ( raise 'Тип поезда и вагона не соответствуют.' )
   end
 
   def unhook_carriage
-    speed.zero? ? unhook_carriage! : (puts 'Прежде чем отцепить вагон остановите поезд.') 
+    speed.zero? ? unhook_carriage! : (raise 'Прежде чем отцепить вагон остановите поезд.') 
   end
 
   def set_route(route)
     self.current_station.send_train(self) if self.current_station
     @route = route
-    puts "Назначен маршрут: #{route.stations.first.title} - #{route.stations.last.title}"
 
     self.current_station = route.stations.first
-    puts "Текущая станция: #{current_station.title}"
-    gets
   end
 
   def move(destination)
@@ -56,7 +57,7 @@ class Train
       increase_speed(55)
       self.current_station = destination 
     else 
-      (puts 'Движение в выбранном направлении невозможно.')
+      (raise 'Движение в выбранном направлении невозможно.')
     end
   end
 
@@ -72,10 +73,6 @@ class Train
     current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
   end
 
-  def about
-    puts "Тип: #{TYPE[self.type]}, вагонов: #{self.carriages.count}, скорость: #{self.speed}"
-  end
-
   protected
 
   def validate!
@@ -85,7 +82,7 @@ class Train
   end
 
   def increase_speed(value)
-    value.positive? ? @speed = value : (puts 'Некорректное значение для увеличения скорости.')
+    value.positive? ? @speed = value : ( raise 'Некорректное значение для увеличения скорости.')
   end
 
   def stop
@@ -99,12 +96,7 @@ class Train
   end
 
   def unhook_carriage!
-    if self.carriages.count.positive? 
-      self.carriages.pop
-      puts 'Вагон отцеплен'
-    else
-      puts "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" 
-    end
+    self.carriages.count.positive? ? self.carriages.pop : ( raise "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" )
   end
 
   def current_speed
