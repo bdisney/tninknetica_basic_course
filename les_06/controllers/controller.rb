@@ -226,7 +226,7 @@ class Controller
   end
 
   def create_route!(start_station, end_station)
-    start_station != end_station ? route = Route.new(start_station, end_station) : (raise 'Начальная и конечная станции не должны совпадать.')
+    route = Route.new(start_station, end_station)
     puts "Маршрут #{route.start_station.title} - #{route.end_station.title} успешно создан."
   end
 

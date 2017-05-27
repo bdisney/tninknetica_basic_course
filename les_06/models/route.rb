@@ -33,6 +33,7 @@ class Route
 
   def validate!
     raise 'Нельзя добавить несуществующие станции в маршрут.' if !Station.all.include?(start_station && end_station)
+    raise 'Начальная и конечная станции не должны совпадать.' if self.start_station == self.end_station  
     true
   end
 
