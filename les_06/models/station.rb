@@ -47,6 +47,7 @@ class Station
 
   def validate!
     raise 'Наименование станции должно быть не короче 3 и больше 15 символов.' if not (3..20).include?(self.title.length) || self.title.nil?
+    Station.all.each { |station| raise "Cтанция #{self.title} уже существует." if station.title == self.title }
     true
   end
 end
