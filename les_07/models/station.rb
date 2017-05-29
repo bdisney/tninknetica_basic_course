@@ -16,6 +16,10 @@ class Station
     @@stations
   end
 
+  def each_train(&block)
+    self.trains.each  { |train| block.call(train) }
+  end
+
   def trains_at_the_station
     if self.trains.any?
       puts '  ..cписок поездов на станции:'
