@@ -3,7 +3,7 @@ require_relative 'carriage.rb'
 class CargoCarriage < Carriage 
   def initialize(volume)
     @type = :cargo
-    @volume = volume
+    @volume = volume.to_f
     @used_volume = 0
   end
 

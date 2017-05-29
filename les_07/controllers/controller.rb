@@ -194,8 +194,15 @@ class Controller
   end
 
   def create_carriage(type)
-    @carriage = CargoCarriage.new if type.eql?(:cargo) 
-    @carriage = PassengerCarriage.new if type.eql?(:passenger)
+    type.eql?(:cargo) ? ( print 'Объем грузового вагона, в тоннах: ' ) : ( print 'Количество мест: ' )
+    capacity = gets.to_i
+
+    if capacity.positive? 
+      @carriage = CargoCarriage.new(capacity) if type.eql?(:cargo)
+      @carriage = PassengerCarriage.new(capacity) if type.eql?(:passenger)
+    else
+      raise 'Недопустимое значение.'
+    end
   end
 
   def select_train
