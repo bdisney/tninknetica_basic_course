@@ -20,6 +20,10 @@ class Train
     register_instance
   end
 
+  def each_carriage(&block)
+    self.carriages.each { |carriage| block.call(carriage) }
+  end
+
   def valid?
     validate!
   rescue
