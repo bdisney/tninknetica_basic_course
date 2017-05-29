@@ -21,7 +21,7 @@ class Train
   end
 
   def each_carriage(&block)
-    self.carriages.each { |carriage| block.call(carriage) }
+    self.carriages.each.with_index(1) { |carriage, index| block.call(carriage, index) }
   end
 
   def valid?

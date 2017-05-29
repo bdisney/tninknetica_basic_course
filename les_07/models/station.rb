@@ -24,10 +24,11 @@ class Station
     if self.trains.any?
       puts '  ..cписок поездов на станции:'
 
-      self.trains.each do |train|
+      self.each_train do |train|
         puts "\tпоезд №: #{train.number}"
         puts "\tтип: #{Train::TYPE[train.type]}"
         puts "\tкол-во вагонов: #{train.carriages.count}"
+        train.each_carriage { |carriage,index| puts "\t\t#{index} вагон, доступно: #{carriage.available}" } 
         puts "\tмаршрут следования: #{train.route.stations.first.title} - #{train.route.stations.last.title}"
       end
     else
