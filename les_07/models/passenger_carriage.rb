@@ -1,14 +1,14 @@
 require_relative 'carriage.rb'
 
 class PassengerCarriage < Carriage 
-  def initialize(seats)
+  def initialize(capacity)
     @type = :passenger
-    @seats = seats.to_i
+    @capacity = capacity.to_i
     @taken = 0
   end
 
   def available
-    @seats - self.taken
+    @capacity - self.taken
   end
 
   def take_the_seat

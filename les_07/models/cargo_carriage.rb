@@ -1,14 +1,14 @@
 require_relative 'carriage.rb'
 
 class CargoCarriage < Carriage 
-  def initialize(volume)
+  def initialize(capacity)
     @type = :cargo
-    @volume = volume.to_f
+    @capacity = capacity.to_f
     @used_volume = 0
   end
 
   def available
-    @volume - self.used
+    @capacity - self.used
   end
 
   def fill_in(volume)
