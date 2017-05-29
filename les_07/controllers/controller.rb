@@ -10,6 +10,7 @@ class Controller
     puts '7 - Отцепить вагон' 
     puts '8 - Назначить поезду маршрут' 
     puts '9 - Список всех станций c поездами' 
+    puts '10 - Купить'
     puts '0 - Exit' 
     print 'Выберите действие: '
   end
@@ -35,6 +36,8 @@ class Controller
       render(:set_route) ; clear_screen
     when 9
       render(:display_all_stations) ; clear_screen
+    when 10
+      render(:buy) ; clear_screen
     when 0
       abort
     else
@@ -213,6 +216,33 @@ class Controller
 
     train = Train.find_by(train_number) 
     train ? train : ( raise 'Нет поезда с таким номером' )
+  end
+
+  def buy
+    train = select_train
+    
+    if train.carriages.any? 
+      puts 'Список вагонов:'
+      train.each_carriage {|carriage, index| puts "\t#{index} вагон, доступно - #{carriage.available}"}
+    else
+      raise 'У поезда нет вагонов.'
+    end
+
+    print "Выберите вагон, указав его номер: "
+    carriage_number = gets.to_i - 1
+
+    if carriage_number.negative? 
+      raise 'Некорректный ввод'
+    elsif train.type.eql?(:passenger)
+      train.carriages[carriage_number].take_the_seat 
+      puts "Место приобретено. Доступных мест: #{train.carriages[carriage_number].available}"
+    else
+      print "Какой объем вам нужен?: "
+      volume = gets.to_f
+
+      train.carriages[carriage_number].fill_in(volume)
+      puts "Загружено #{volume} т. Доступно для загрузки: #{train.carriages[carriage_number].available} т."
+    end
   end
 
   def display_all_stations
