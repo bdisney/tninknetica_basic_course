@@ -15,13 +15,11 @@ require_relative 'models/passenger_carriage.rb'
 
 system 'clear'
 
-def self.user_choice
-  user_choice = gets.to_i
-end
-
 controller = Controller.new
 
 loop do
   controller.main_actions
-  controller.execute_action(user_choice)
+  user_choice = gets.strip
+  break if user_choice == '0'
+  controller.render_action(user_choice)
 end
