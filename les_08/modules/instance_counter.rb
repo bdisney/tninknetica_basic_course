@@ -10,8 +10,8 @@ module InstanceCounter
     end
 
     private
-    
-    def count_instances(instance) 
+
+    def count_instances(instance)
       @instances ||= 0
       @instances += instance
     end
