@@ -1,6 +1,8 @@
 require_relative 'carriage.rb'
 
-class CargoCarriage < Carriage 
+class CargoCarriage < Carriage
+  attr_reader :used_volume
+
   def initialize(capacity)
     @type = :cargo
     @capacity = capacity.to_f
@@ -8,14 +10,10 @@ class CargoCarriage < Carriage
   end
 
   def available
-    @capacity - self.used
+    @capacity - @used_volume
   end
 
   def fill_in(volume)
-    self.available > volume ? @used_volume += volume : ( raise 'Недостаточно свободного места' )
-  end
-
-  def used
-    @used_volume
+    available >= volume ? @used_volume += volume : (raise 'Недостаточно свободного места')
   end
 end

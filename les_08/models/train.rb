@@ -2,14 +2,22 @@ class Train
   include Vendor
   include InstanceCounter
   include IsValid
-  
-  TYPE = {passenger: 'Пассажирский', cargo: 'Грузовой'}
+
+  TYPE = { passenger: 'Пассажирский', cargo: 'Грузовой' }.freeze
   INITIAL_SPEED = 0
   NUMBER_FORMAT = /^[a-z0-9]{3}[-]?[a-z0-9]{2}$/i
 
   @@trains = {}
 
   attr_reader :type, :route, :current_station, :number, :speed, :carriages
+
+  def self.all
+    @@trains
+  end
+
+  def self.find_by(number)
+    @@trains[number]
+  end
 
   def initialize(number)
     @number = number
@@ -20,8 +28,8 @@ class Train
     register_instance
   end
 
-  def each_carriage(&block)
-    self.carriages.each.with_index(1) { |carriage, index| block.call(carriage, index) }
+  def each_carriage
+    carriages.each.with_index(1) { |carriage, index| yield(carriage, index) }
   end
 
   def valid?
@@ -30,63 +38,54 @@ class Train
     false
   end
 
-  def self.all
-    @@trains
-  end
-
-  def self.find_by(number)
-    @@trains[number]
-  end
-
   def add_carriage!(carriage)
-    self.type.eql?(carriage.type) ? ( self.carriages << carriage if speed.zero? ) : ( raise 'Тип поезда и вагона не соответствуют.' )
+    raise 'Тип поезда и вагона не соответствуют.' unless type.eql?(carriage.type)
+
+    carriages << carriage if speed.zero?
   end
 
   def unhook_carriage
-    speed.zero? ? unhook_carriage! : (raise 'Прежде чем отцепить вагон остановите поезд.') 
+    speed.zero? ? unhook_carriage! : (raise 'Прежде чем отцепить вагон остановите поезд.')
   end
 
-  def set_route(route)
-    self.current_station.send_train(self) if self.current_station
+  def add_route(route)
+    current_station.send_train(self) if current_station
     @route = route
 
     self.current_station = route.stations.first
   end
 
   def move(destination)
-    if destination 
-      increase_speed(5)
-      self.current_station.send_train(self)
+    raise 'Движение в выбранном направлении невозможно.' unless destination
+    increase_speed(5)
+    current_station.send_train(self)
 
-      increase_speed(55)
-      self.current_station = destination 
-    else 
-      (raise 'Движение в выбранном направлении невозможно.')
-    end
+    increase_speed(55)
+    self.current_station = destination
   end
 
   def next_station
-    position = self.route.stations.index(current_station)
+    position = route.stations.index(current_station)
 
-    current_station == self.route.stations.last ? ( puts 'Конечная' ) : self.route.stations[position + 1] 
+    current_station == route.stations.last ? (puts 'Конечная') : route.stations[position + 1]
   end
 
   def prev_station
-    position = self.route.stations.index(current_station)
-  
-    current_station == self.route.stations.first ? ( puts 'Конечная' ) : self.route.stations[position - 1]
+    position = route.stations.index(current_station)
+
+    current_station == route.stations.first ? (puts 'Конечная') : route.stations[position - 1]
   end
 
   protected
 
   def validate!
-    raise 'Недопустимый формат номера.' if self.number !~ NUMBER_FORMAT
-    raise "Поезд с номером #{number} уже существует." if @@trains.has_key?(number)
+    raise 'Недопустимый формат номера.' if number !~ NUMBER_FORMAT
+    raise "Поезд с номером #{number} уже существует." if @@trains.key?(number)
     true
   end
 
   def increase_speed(value)
-    value.positive? ? @speed = value : ( raise 'Некорректное значение для увеличения скорости.')
+    value.positive? ? @speed = value : (raise 'Некорректное значение для увеличения скорости.')
   end
 
   def stop
@@ -100,10 +99,6 @@ class Train
   end
 
   def unhook_carriage!
-    self.carriages.count.positive? ? self.carriages.pop : ( raise "Нечего отцеплять. Кол-во вагонов: #{self.carriages.count}" )
-  end
-
-  def current_speed
-    self.speed
+    carriages.count.positive? ? carriages.pop : (raise "Кол-во вагонов: #{carriages.count}")
   end
 end

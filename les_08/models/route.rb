@@ -5,6 +5,10 @@ class Route
 
   attr_reader :stations, :start_station, :end_station
 
+  def self.all
+    @@routes
+  end
+
   def initialize(start_station, end_station)
     @start_station = start_station
     @end_station = end_station
@@ -13,28 +17,27 @@ class Route
     @stations = [start_station, end_station]
   end
 
-  def self.all
-    @@routes
-  end
-
   def stations_list
-    self.stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
+    stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
   end
 
   def add_station!(station)
-    self.stations.insert(-2, station)
+    stations.insert(-2, station)
+  end
+
+  def title
+    "#{stations.first.title} - #{stations.last.title}"
   end
 
   def remove_station!(station)
-    station.trains.empty? ? self.stations.delete(station) : ( raise 'Нельзя удалить станцию с находящимися на ней поездами. Переместите их.' )
+    station.trains.empty? ? stations.delete(station) : (raise 'Перед удалением переместите поезда.')
   end
 
   protected
 
   def validate!
-    raise 'Нельзя добавить несуществующие станции в маршрут.' if !Station.all.include?(start_station && end_station)
-    raise 'Начальная и конечная станции не должны совпадать.' if self.start_station == self.end_station  
+    raise 'Указанные станции не созданы.' unless Station.all.include?(start_station && end_station)
+    raise 'Начальная и конечная станции не должны совпадать.' if start_station == end_station
     true
   end
-
 end
