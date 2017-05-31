@@ -18,6 +18,7 @@ class Route
   end
 
   def stations_list
+    puts "Список станций в маршруте #{title}"
     stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
   end
 

@@ -62,6 +62,7 @@ class Train
 
     increase_speed(55)
     self.current_station = destination
+    puts "Поезд прибыл на станцию: #{current_station.title}"
   end
 
   def next_station
@@ -74,6 +75,12 @@ class Train
     position = route.stations.index(current_station)
 
     current_station == route.stations.first ? (puts 'Конечная') : route.stations[position - 1]
+  end
+
+  def info
+    puts "Маршрут #{route.title}", "Текущая станция: #{current_station.title}"
+    puts "Следующая станция: #{next_station.title}" if next_station
+    puts "Предыдущая станция: #{prev_station.title}" if prev_station
   end
 
   protected

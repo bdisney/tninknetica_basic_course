@@ -18,7 +18,7 @@ system 'clear'
 controller = Controller.new
 
 loop do
-  controller.main_actions
+  controller.display_actions
   user_choice = gets.strip
   break if user_choice == '0'
   controller.render_action(user_choice)
