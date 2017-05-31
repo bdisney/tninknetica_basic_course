@@ -12,19 +12,19 @@ class Controller
     '10' => { method: :buy }
   }.freeze
 
-  def main_actions
-    puts 'Добро пожаловать в он-лайн депо!'
-    puts '1 - Создать станцию'
-    puts '2 - Создать маршрут'
-    puts '3 - Редактировать маршрут (добавить/удалить станцию)'
-    puts '4 - Создать поезд'
-    puts '5 - Управление движением поезда'
-    puts '6 - Добавить вагон'
-    puts '7 - Отцепить вагон'
-    puts '8 - Назначить поезду маршрут'
-    puts '9 - Список всех станций c поездами'
-    puts '10 - Купить'
-    puts '0 - Exit'
+  def display_actions
+    puts 'Добро пожаловать в он-лайн депо!',
+         '1 - Создать станцию',
+         '2 - Создать маршрут',
+         '3 - Редактировать маршрут (добавить/удалить станцию)',
+         '4 - Создать поезд',
+         '5 - Управление движением поезда',
+         '6 - Добавить вагон',
+         '7 - Отцепить вагон',
+         '8 - Назначить поезду маршрут',
+         '9 - Список всех станций c поездами',
+         '10 - Купить',
+         '0 - Exit'
     print 'Выберите действие: '
   end
 
@@ -82,7 +82,6 @@ class Controller
     display_routes
     route = select_route
 
-    puts "Список станций в маршруте #{route.title}:"
     route.stations_list
 
     print '1 - добавить станцию, 2 - удалить станцию: '
@@ -93,29 +92,33 @@ class Controller
   end
 
   def add_station_to_route(route)
-    fit_stations = Station.all - route.stations
-    raise 'Чтобы добавить станцию сначала создайте ее.' unless fit_stations.any?
+    available_stations = Station.all - route.stations
+    raise 'Чтобы добавить станцию сначала создайте ее.' if available_stations.empty?
 
-    puts 'Можно добавить следующие станции:'
-    fit_stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
+    station = choose_from(available_stations)
 
-    print 'Укажите номер станции, которую хотите добавить: '
-    id = gets.to_i - 1
-
-    fit_stations[id] ? route.add_station!(fit_stations[id]) : (raise 'Некорректный ввод')
+    route.add_station!(station)
     puts 'Маршрут обновлен.'
   end
 
   def remove_station(route)
-    fit_stations = route.stations - [route.stations.first] - [route.stations.last]
-    raise 'Нельзя удалить начальную и конечную станции маршрута.' unless fit_stations.any?
+    available_stations = route.stations - [route.stations.first] - [route.stations.last]
+    raise 'Нельзя удалить начальную и конечную станции маршрута.' if available_stations.empty?
 
-    fit_stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
-    print 'Выберите станцию для удаления: '
+    station = choose_from(available_stations)
+
+    route.remove_station!(station)
+    puts 'Маршрут обновлен.'
+  end
+
+  def choose_from(stations)
+    puts 'Подходящие под запрос станции:'
+    stations.each.with_index(1) { |station, index| puts "#{index}. #{station.title}" }
+
+    print 'Выберите станцию по номеру: '
     id = gets.to_i - 1
 
-    fit_stations[id] ? route.remove_station!(fit_stations[id]) : (raise 'Некорректный ввод')
-    puts 'Маршрут обновлен.'
+    stations[id] || (raise 'Некорректный ввод')
   end
 
   def create_train
@@ -130,25 +133,21 @@ class Controller
   end
 
   def move_train
-    puts 'Управление движением поезда.'
     train = select_train
-    raise 'Прежде чем начать движение назначьте поезду маршрут.' unless train && train.route
+    raise 'Назначьте поезду маршрут.' unless train && train.route
 
-    puts "Маршрут #{train.route.title}"
-    puts "Текущая станция: #{train.current_station.title}"
-    puts "Следующая станция: #{train.next_station.title}" if train.next_station
-    puts "Предыдущая станция: #{train.prev_station.title}" if train.prev_station
-    gets
-
+    train.info
     print '1 - отправиться на след. станцию. 2 - отправиться на пред. станцию: '
-    raise 'Некорректная команда.' unless [1, 2].include?(choice = gets.to_i)
+    choice = gets.to_i
+    raise 'Некорректная команда.' unless [1, 2].include?(choice)
 
     choice == 1 ? train.move(train.next_station) : train.move(train.prev_station)
-    puts "Поезд прибыл на станцию #{train.current_station.title}"
   end
 
   def display_all_trains
-    Train.all.each { |number, train| puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}" }
+    Train.all.each do |number, train|
+      puts "\tПоезд № #{number}, тип: #{train.type}, кол-во вагонов: #{train.carriages.count}"
+    end
   end
 
   def add_carriage
@@ -178,40 +177,44 @@ class Controller
     print 'Выберите поезд, указав его №: '
     number = gets.strip
 
-    train = Train.find_by(number)
-    train ? train : (raise 'Нет поезда с таким номером')
+    Train.find_by(number) || (raise 'Нет поезда с таким номером')
   end
 
   def select_route
     print 'Выберите маршрут указав его порядковый номер: '
     route_number = gets.to_i - 1
 
-    route = Route.all[route_number]
-    route ? route : (raise 'Маршрут не найден.')
+    Route.all[route_number] || (raise 'Маршрут не найден.')
   end
 
   def select_station
     id = gets.to_i - 1
-    station = Station.all[id]
-    station ? station : (raise 'Некорректный ввод')
+    Station.all[id] || (raise 'Некорректный ввод')
   end
 
   def buy
     train = select_train
     raise 'У поезда нет вагонов.' unless train.carriages.any?
-    puts 'Список вагонов:'
-    train.each_carriage { |carriage, index| puts "\t#{index} вагон, доступно - #{carriage.available}" }
+    train.each_carriage { |carriage, i| puts "\t#{i} вагон, доступно - #{carriage.available}" }
 
     print 'Выберите вагон, указав его номер: '
-    raise 'Некорректный ввод' if (carriage_number = gets.to_i - 1).negative?
+    carriage_number = gets.to_i - 1
+    raise 'Некорректный ввод' if carriage_number.negative?
+    buy!(train, carriage_number)
+  end
+
+  def buy!(train, carriage_number)
+    carriage = train.carriages[carriage_number] || (raise 'Неправильный номер вагона')
 
     if train.type.eql?(:passenger)
-      train.carriages[carriage_number].take_the_seat
-      puts "Место приобретено. Доступных мест: #{train.carriages[carriage_number].available}"
+      carriage.take_the_seat
+      puts 'Место приобретено.'
     else
       print 'Какой объем вам нужен?: '
-      train.carriages[carriage_number].fill_in(volume = gets.to_f)
-      puts "Загружено #{volume} т. Доступно: #{train.carriages[carriage_number].available} т."
+      volume = gets.to_f
+
+      carriage.fill_in(volume)
+      puts "Загружено #{volume} т."
     end
   end
 
@@ -238,7 +241,12 @@ class Controller
   end
 
   def create_train!(number, train_type)
-    train_type == 1 ? train = CargoTrain.new(number) : train = PassengerTrain.new(number)
+    train =
+      if train_type == 1
+        CargoTrain.new(number)
+      else
+        PassengerTrain.new(number)
+      end
     puts "#{Train::TYPE[train.type]} поезд № #{train.number} успешно создан."
   end
 
