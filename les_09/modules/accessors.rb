@@ -28,7 +28,7 @@ module Accessors
       define_method(name) { instance_variable_get(var_name) }
 
       define_method("#{name}=".to_sym) do |value|
-        raise 'Несоответствие типов.' unless self.class == name_class
+        raise TypeError, 'Несоответствие типов.' unless self.class == name_class
         instance_variable_set(var_name, value)
       end
     end
