@@ -1,9 +1,12 @@
 class Route
-  include IsValid
+  include Validation
 
   @@routes = []
 
   attr_reader :stations, :start_station, :end_station
+
+  validate :start_station, :exists
+  validate :end_station,   :exists
 
   def self.all
     @@routes
@@ -32,13 +35,5 @@ class Route
 
   def remove_station!(station)
     station.trains.empty? ? stations.delete(station) : (raise 'Перед удалением переместите поезда.')
-  end
-
-  protected
-
-  def validate!
-    raise 'Указанные станции не созданы.' unless Station.all.include?(start_station && end_station)
-    raise 'Начальная и конечная станции не должны совпадать.' if start_station == end_station
-    true
   end
 end

@@ -1,7 +1,8 @@
 class Train
   include Vendor
   include InstanceCounter
-  include IsValid
+  include Validation
+  include Accessors
 
   TYPE = { passenger: 'Пассажирский', cargo: 'Грузовой' }.freeze
   INITIAL_SPEED = 0
@@ -11,12 +12,14 @@ class Train
 
   attr_reader :type, :route, :current_station, :number, :speed, :carriages
 
-  def self.all
-    @@trains
-  end
+  class << self
+    def all
+      @@trains
+    end
 
-  def self.find_by(number)
-    @@trains[number]
+    def find_by(number)
+      @@trains[number]
+    end
   end
 
   def initialize(number)
@@ -30,12 +33,6 @@ class Train
 
   def each_carriage
     carriages.each.with_index(1) { |carriage, index| yield(carriage, index) }
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   def add_carriage!(carriage)
@@ -84,12 +81,6 @@ class Train
   end
 
   protected
-
-  def validate!
-    raise 'Недопустимый формат номера.' if number !~ NUMBER_FORMAT
-    raise "Поезд с номером #{number} уже существует." if @@trains.key?(number)
-    true
-  end
 
   def increase_speed(value)
     value.positive? ? @speed = value : (raise 'Некорректное значение для увеличения скорости.')

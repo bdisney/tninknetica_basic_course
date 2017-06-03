@@ -1,19 +1,24 @@
 class Station
-  include IsValid
+  include Validation
+
+  @@stations = []
 
   attr_reader :title, :trains
 
-  @@stations = []
+  validate :title, :presence
+  validate :type,  :type, Station
+  validate :title, :length_in_range, (3..15)
+  validate :title, :uniqueness
+
+  def self.all
+    @@stations
+  end
 
   def initialize(title)
     @title = title
     validate!
     @trains = []
     @@stations << self
-  end
-
-  def self.all
-    @@stations
   end
 
   def each_train
@@ -42,13 +47,5 @@ class Station
 
   def send_train(train)
     trains.include?(train) ? trains.delete(train) : (raise 'Такого поезда на станции нет.')
-  end
-
-  protected
-
-  def validate!
-    raise 'Не короче 3 и больше 15 символов.' unless (3..20).cover?(title.length)
-    Station.all.each { |station| raise "Cтанция #{title} существует." if station.title == title }
-    true
   end
 end
