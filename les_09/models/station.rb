@@ -1,4 +1,7 @@
+require 'objspace'
+
 class Station
+  include ObjectSpace
   include Validation
 
   @@stations = []

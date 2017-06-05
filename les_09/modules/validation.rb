@@ -48,11 +48,7 @@ module Validation
     end
 
     def uniqueness(name, value, *_option)
-      if is_a?(Station)
-        self.class.all.each { |object| raise "Станция #{value} уже есть." if object.send(name) == value && object != self }
-      elsif is_a?(Train)
-        raise "Поезд № #{value} уже есть." if self.class.all[value] && self.class.all[value] != self
-      end
+      ObjectSpace.each_object(self.class) { |obj| raise "#{value} существует" if obj.send(name) == value && obj != self }
     end
 
     def exists(name, value, *_option)

@@ -1,6 +1,9 @@
+require 'objspace'
+
 class Train
   include Vendor
   include InstanceCounter
+  include ObjectSpace
   include Validation
   include Accessors
 
